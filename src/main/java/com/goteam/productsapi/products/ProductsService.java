@@ -16,14 +16,19 @@ public class ProductsService {
     @Autowired
     private ProductsRepository repository;
 
+    @Autowired
+    private ProductsMQ mq;
+
     public Product create(ProductRequestDTO requestDTO){
 
         Product newProduct = ProductMapper.requestToProduct(requestDTO);
-        return repository.save(newProduct);
+        newProduct = repository.save(newProduct);
+        mq.sendMessage(newProduct);
+
+        return newProduct;
     }
 
     public Product retrieveById(String id){
-
         return repository.findById(id).orElse(null);
     }
 
